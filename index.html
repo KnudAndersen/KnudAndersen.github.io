@@ -78,59 +78,60 @@
     </div>
 </div>
 <script>
-  const timeInputs = document.querySelectorAll('.time-input');
-  const totalTimeInput = document.getElementById('totalTime');
+  const time_in_parse = document.querySelectorAll('.time-input');
+  const total_ttime = document.getElementById('totalTime');
   const checkbox1 = document.getElementById('checkbox1');
   const checkbox2 = document.getElementById('checkbox2');
-  timeInputs.forEach(input => {
+  time_in_parse.forEach(input => {
       input.addEventListener('input', get_time);
   });
-  let checkbox1Checked = false;
-let checkbox2Checked = false;
+  let cb1_status = false;
+let cb2_status= false;
+//only one camn be checked, use booleans nothing else works lol(?i love java!!!)
 checkbox1.addEventListener('click', () => {
-    checkbox1Checked = !checkbox1Checked;
-    checkbox1.classList.toggle('checked', checkbox1Checked);
-    if (checkbox1Checked) {
-        checkbox2Checked = false; // Uncheck checkbox2 if checkbox1 is checked
+    cb1_status = !cb1_status;
+    checkbox1.classList.toggle('checked', cb1_status);
+    if (cb1_status) {
+        cb2_status= false;
         checkbox2.classList.remove('checked');
     }
     get_time();
 });
 checkbox2.addEventListener('click', () => {
-    checkbox2Checked = !checkbox2Checked;
+    cb2_status= !checkbox2Checked;
     checkbox2.classList.toggle('checked', checkbox2Checked);
     if (checkbox2Checked) {
-        checkbox1Checked = false; // Uncheck checkbox1 if checkbox2 is checked
+        cb1_status = false; 
         checkbox1.classList.remove('checked');
     }
     get_time();
 });
   function get_time() {
       let ms_total = 0;
-      timeInputs.forEach(input => {
+      time_in_parse.forEach(input => {
           const [minutes, seconds, ms] = input.value.split(':').map(num => parseInt(num));
           ms_total += (minutes * 60 * 1000) + (seconds * 1000) + ms;
       });
 
       let multiplier = 1;
-      if (checkbox1Checked) {
-        multiplier = 0.9866;
+      if (cb1_status) {
+        multiplier = 0.9866; //MALE
       }
       if (checkbox2Checked) {
-        multiplier = 0.9894;
+        multiplier = 0.9894;// FE MALE
       }
       ms_total *= multiplier;
       const total_time_F = get_ms(ms_total);
-      totalTimeInput.value = total_time_F;
+      total_ttime.value = total_time_F;
   }
   function get_ms(ms) {
       const total_sec = Math.floor(ms / 1000);
       const totalMinutes = Math.floor(total_sec / 60);
 
-      const remainingSeconds = total_sec % 60;
-      const remainingms = ms % 1000;
+      const rem_sec = total_sec % 60;
+      const rem_ms = ms % 1000;
 
-      return `${totalMinutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}:${remainingms.toString().padStart(3, '0')}`;
+      return `${totalMinutes.toString().padStart(2, '0')}:${rem_sec.toString().padStart(2, '0')}:${rem_ms.toString().padStart(3, '0')}`;
   }
 </script>
 
