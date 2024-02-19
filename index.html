@@ -77,19 +77,16 @@
         <input type="text" id="totalTime" readonly />
     </div>
 </div>
-
 <script>
   const timeInputs = document.querySelectorAll('.time-input');
   const totalTimeInput = document.getElementById('totalTime');
   const checkbox1 = document.getElementById('checkbox1');
   const checkbox2 = document.getElementById('checkbox2');
-
   timeInputs.forEach(input => {
-      input.addEventListener('input', updateTotalTime);
+      input.addEventListener('input', get_time);
   });
   let checkbox1Checked = false;
 let checkbox2Checked = false;
-
 checkbox1.addEventListener('click', () => {
     checkbox1Checked = !checkbox1Checked;
     checkbox1.classList.toggle('checked', checkbox1Checked);
@@ -97,9 +94,8 @@ checkbox1.addEventListener('click', () => {
         checkbox2Checked = false; // Uncheck checkbox2 if checkbox1 is checked
         checkbox2.classList.remove('checked');
     }
-    updateTotalTime();
+    get_time();
 });
-
 checkbox2.addEventListener('click', () => {
     checkbox2Checked = !checkbox2Checked;
     checkbox2.classList.toggle('checked', checkbox2Checked);
@@ -107,15 +103,13 @@ checkbox2.addEventListener('click', () => {
         checkbox1Checked = false; // Uncheck checkbox1 if checkbox2 is checked
         checkbox1.classList.remove('checked');
     }
-    updateTotalTime();
+    get_time();
 });
-
-
-  function updateTotalTime() {
-      let totalMilliseconds = 0;
+  function get_time() {
+      let ms_total = 0;
       timeInputs.forEach(input => {
-          const [minutes, seconds, milliseconds] = input.value.split(':').map(num => parseInt(num));
-          totalMilliseconds += (minutes * 60 * 1000) + (seconds * 1000) + milliseconds;
+          const [minutes, seconds, ms] = input.value.split(':').map(num => parseInt(num));
+          ms_total += (minutes * 60 * 1000) + (seconds * 1000) + ms;
       });
 
       let multiplier = 1;
@@ -125,23 +119,18 @@ checkbox2.addEventListener('click', () => {
       if (checkbox2Checked) {
         multiplier = 0.9894;
       }
-     
-
-      // Apply the multiplier to the total time
-      totalMilliseconds *= multiplier;
-
-      const formattedTotalTime = formatMilliseconds(totalMilliseconds);
-      totalTimeInput.value = formattedTotalTime;
+      ms_total *= multiplier;
+      const total_time_F = get_ms(ms_total);
+      totalTimeInput.value = total_time_F;
   }
+  function get_ms(ms) {
+      const total_sec = Math.floor(ms / 1000);
+      const totalMinutes = Math.floor(total_sec / 60);
 
-  function formatMilliseconds(milliseconds) {
-      const totalSeconds = Math.floor(milliseconds / 1000);
-      const totalMinutes = Math.floor(totalSeconds / 60);
+      const remainingSeconds = total_sec % 60;
+      const remainingms = ms % 1000;
 
-      const remainingSeconds = totalSeconds % 60;
-      const remainingMilliseconds = milliseconds % 1000;
-
-      return `${totalMinutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}:${remainingMilliseconds.toString().padStart(3, '0')}`;
+      return `${totalMinutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}:${remainingms.toString().padStart(3, '0')}`;
   }
 </script>
 
