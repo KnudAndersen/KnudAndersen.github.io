@@ -77,16 +77,19 @@
         <input type="text" id="totalTime" readonly />
     </div>
 </div>
+
 <script>
   const timeInputs = document.querySelectorAll('.time-input');
   const totalTimeInput = document.getElementById('totalTime');
   const checkbox1 = document.getElementById('checkbox1');
   const checkbox2 = document.getElementById('checkbox2');
+
   timeInputs.forEach(input => {
-      input.addEventListener('input', get_time);
+      input.addEventListener('input', updateTotalTime);
   });
-  let checkbox1Checked = false;
+ let checkbox1Checked = false;
 let checkbox2Checked = false;
+
 checkbox1.addEventListener('click', () => {
     checkbox1Checked = !checkbox1Checked;
     checkbox1.classList.toggle('checked', checkbox1Checked);
@@ -94,8 +97,9 @@ checkbox1.addEventListener('click', () => {
         checkbox2Checked = false; // Uncheck checkbox2 if checkbox1 is checked
         checkbox2.classList.remove('checked');
     }
-    get_time();
+    updateTotalTime();
 });
+
 checkbox2.addEventListener('click', () => {
     checkbox2Checked = !checkbox2Checked;
     checkbox2.classList.toggle('checked', checkbox2Checked);
@@ -103,28 +107,34 @@ checkbox2.addEventListener('click', () => {
         checkbox1Checked = false; // Uncheck checkbox1 if checkbox2 is checked
         checkbox1.classList.remove('checked');
     }
-    get_time();
+    updateTotalTime();
 });
-  function get_time() {
-      let ms_total = 0;
+
+
+  function updateTotalTime() {
+      let totalMilliseconds = 0;
       timeInputs.forEach(input => {
           const [minutes, seconds, milliseconds] = input.value.split(':').map(num => parseInt(num));
-          ms_total += (minutes * 60 * 1000) + (seconds * 1000) + milliseconds;
+          totalMilliseconds += (minutes * 60 * 1000) + (seconds * 1000) + milliseconds;
       });
 
       let multiplier = 1;
-      if (checkbox1Checked) {
-        multiplier = 0.9866;
+
+      if (checkbox1.checked && !checkbox2.checked) {
+          // Only the first checkbox is checked
+          multiplier = 0.9866;
+      } else if (!checkbox1.checked && checkbox2.checked) {
+          // Only the second checkbox is checked
+          multiplier = 0.9894;
+      } else if (checkbox1.checked && checkbox2.checked) {
+          // Both checkboxes are checked, do nothing
+          multiplier = 1;
       }
-      if (checkbox2Checked) {
-        multiplier = 0.9894;
-      }
-     
 
       // Apply the multiplier to the total time
-      ms_total *= multiplier;
+      totalMilliseconds *= multiplier;
 
-      const formattedTotalTime = formatMilliseconds(ms_total);
+      const formattedTotalTime = formatMilliseconds(totalMilliseconds);
       totalTimeInput.value = formattedTotalTime;
   }
 
