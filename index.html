@@ -1,25 +1,152 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
-  <meta charset="UTF-8" />
-
-  <title>Hello, world!</title>
-
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-
-  <meta name="description" content="" />
-
-  <link rel="icon" href="favicon.png">
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Time Input</title>
+<style>
+      .checkbox-container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .checkbox-label {
+        display: flex;
+        align-items: center;
+    }
+    .checkbox-label input[type="radio"] {
+        display: none;
+    }
+    .checkbox-label .checkbox-custom {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #aaa;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+    .checkbox-label .checkbox-custom.checked {
+        background-color: #007bff;
+    }
+    .container {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 200px;
+    }
+    .time-input {
+        width: 100%;
+    }
+</style>
 </head>
-
 <body>
+  <h1> Distance Medley Relay</h1>
+<div class="container">
+    <div>
+      <h3> 1200M: </h3>
+        <input type="text" id="time1" class="time-input" placeholder="00:00:000" />
+    </div>
+    <div>
+      <h3> 400M: </h3>
 
-  <h1>Hello, world!</h1>
+        <input type="text" id="time2" class="time-input" placeholder="00:00:000" />
+    </div>
+    <div>
+      <h3> 800M: </h3>
+
+        <input type="text" id="time3" class="time-input" placeholder="00:00:000" />
+    </div>
+    <div>
+      <h3> 1600M: </h3>
+
+        <input type="text" id="time4" class="time-input" placeholder="00:00:000" />
+    </div>
+    <div class="checkbox-container">
+      <label class="checkbox-label" for="checkbox1">
+          <div class="checkbox-custom" id="checkbox1"></div>
+          NORMAL MALE BANKED
+      </label>
+      <label class="checkbox-label" for="checkbox2">
+          <div class="checkbox-custom" id="checkbox2"></div>
+          FE MALE BANKED
+      </label>
+  </div>
+
+    <div>
+        <h1> Total Time: </h1>
+        <input type="text" id="totalTime" readonly />
+    </div>
+</div>
+
+<script>
+  const timeInputs = document.querySelectorAll('.time-input');
+  const totalTimeInput = document.getElementById('totalTime');
+  const checkbox1 = document.getElementById('checkbox1');
+  const checkbox2 = document.getElementById('checkbox2');
+
+  timeInputs.forEach(input => {
+      input.addEventListener('input', updateTotalTime);
+  });
+  let checkbox1Checked = false;
+let checkbox2Checked = false;
+
+checkbox1.addEventListener('click', () => {
+    checkbox1Checked = !checkbox1Checked;
+    checkbox1.classList.toggle('checked', checkbox1Checked);
+    if (checkbox1Checked) {
+        checkbox2Checked = false; // Uncheck checkbox2 if checkbox1 is checked
+        checkbox2.classList.remove('checked');
+    }
+    updateTotalTime();
+});
+
+checkbox2.addEventListener('click', () => {
+    checkbox2Checked = !checkbox2Checked;
+    checkbox2.classList.toggle('checked', checkbox2Checked);
+    if (checkbox2Checked) {
+        checkbox1Checked = false; // Uncheck checkbox1 if checkbox2 is checked
+        checkbox1.classList.remove('checked');
+    }
+    updateTotalTime();
+});
+
+
+  function updateTotalTime() {
+      let totalMilliseconds = 0;
+      timeInputs.forEach(input => {
+          const [minutes, seconds, milliseconds] = input.value.split(':').map(num => parseInt(num));
+          totalMilliseconds += (minutes * 60 * 1000) + (seconds * 1000) + milliseconds;
+      });
+
+      let multiplier = 1;
+      if (checkbox1Checked) {
+        multiplier = 0.9866;
+      }
+      if (checkbox2Checked) {
+        multiplier = 0.9894;
+      }
+     
+
+      // Apply the multiplier to the total time
+      totalMilliseconds *= multiplier;
+
+      const formattedTotalTime = formatMilliseconds(totalMilliseconds);
+      totalTimeInput.value = formattedTotalTime;
+  }
+
+  function formatMilliseconds(milliseconds) {
+      const totalSeconds = Math.floor(milliseconds / 1000);
+      const totalMinutes = Math.floor(totalSeconds / 60);
+
+      const remainingSeconds = totalSeconds % 60;
+      const remainingMilliseconds = milliseconds % 1000;
+
+      return `${totalMinutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}:${remainingMilliseconds.toString().padStart(3, '0')}`;
+  }
+</script>
+
+
+
 
 </body>
-
 </html>
